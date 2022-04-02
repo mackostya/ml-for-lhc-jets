@@ -1,7 +1,7 @@
 # Searchinng for new Physics at the LHC with Machine Learning
 
 <p align="left">
-<a href="#"><img alt="License" src="https://img.shields.io/github/license/mackostya/ml-for-lhc-jets?color=orange&style=flat"></a>
+<a href="#"><img alt="License" src="https://img.shields.io/github/license/mackostya/ml-for-lhc-jets?label=license&color=orange&style=flat"></a>
 <a href="#"><img alt="Last commit" src="https://img.shields.io/github/last-commit/mackostya/ml-for-lhc-jets/main?color=green&style=flat"></a>
 </p>
 
