@@ -1,0 +1,5 @@
+{
+    "MAC_PATH": "test.h5",
+    "CLUSTER_PATH_QCD": "/rwthfs/rz/cluster/work/bn227573/train_images_QCDorWhat_QCD.h5",
+    "CLUSTER_PATH_TOP": "/rwthfs/rz/cluster/work/bn227573/train_images_QCDorWhat_top.h5"
+}
