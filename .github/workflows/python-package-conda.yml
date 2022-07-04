@@ -16,7 +16,7 @@ jobs:
         python-version: 3.10.0
     - name: Add pip packages
       run: |
-        pip install -r requiremnts.txt
+        pip install -r requirements.txt
     - name: Lint with flake8
       run: |
         pip install flake8
