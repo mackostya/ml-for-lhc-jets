@@ -11,3 +11,4 @@ The 3 models implemented in this work are:
 - **CNN** (convolutional neural network), which trains on representation of jets as 40x40 images.
 - **AE** (autoencoder), which trains on the background (QCD) 40x40 images. Afterwards both signal and background are passed to the model. The reconstruction of the signal is expected to be less efficient, because the model was trained on the background.
 - **edgeConvNet**, the network, which trains on the jets, that are represented as reclustered jets. This model is modified from [here](https://github.com/hqucms/ParticleNet).
+- ...
