@@ -1,2 +1,4 @@
 venv
 .DS_Store
+.pytest_cahche/
+__pycache__/
