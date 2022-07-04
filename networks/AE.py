@@ -14,98 +14,104 @@ from keras import Model
 from keras.initializers import Constant
 import json
 
-with open("path.json") as jsonFile:
-    jsonObject = json.load(jsonFile)
-    jsonFile.close()
+def ae_model():
+    bottleneck = 100
+    alpha = 0.25
+    
+    input = Input(shape = (40,40,1))
+    encoded = Conv2D(10, 3, padding = "same")(input)
+    encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
+    encoded = Conv2D(10, 3, padding="same")(encoded) 
+    encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
+    encoded = AveragePooling2D()(encoded)
+    encoded = Conv2D(10, 3, padding="same")(encoded) 
+    encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
+    encoded = Conv2D(5, 3, padding="same")(encoded) 
+    encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
+    encoded = Conv2D(5, 3, padding="same")(encoded) 
+    encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
+    encoded = Flatten()(encoded)
+    encoded = Dense(400)(encoded)
+    encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
+    encoded = Dense(100)(encoded)
+    encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
+    encoded = Dense(bottleneck)(encoded)
+    encoded = PReLU(name="bneck")(encoded)
 
-n = 20000
+    decoded = Dense(100)(encoded)
+    decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
+    decoded = Dense(400)(decoded)
+    decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
+    decoded = Reshape((20,20,1))(decoded)
+    decoded = Conv2D(5, 3, padding = "same")(decoded)
+    decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
+    decoded = Conv2D(5, 3, padding = "same")(decoded)
+    decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
+    decoded = UpSampling2D()(decoded)
+    decoded = Conv2D(5, 3, padding = "same")(decoded)
+    decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
+    decoded = Conv2D(10, 3, padding = "same")(decoded)
+    decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
+    decoded = Conv2D(1, 3, padding = "same")(decoded)
 
-with h5py.File(jsonObject["CLUSTER_PATH_QCD"], "r") as f:
-    images_qcd = f["images"][:n]
+    model = Model(input, decoded, name = "AE_20k")
+    return model
 
-x_data = np.reshape(images_qcd, (20000,40,40,1)) 
+if __name__=="__main__":
 
-# make output directory
-folder = 'results/'
+    with open("path.json") as jsonFile:
+        jsonObject = json.load(jsonFile)
+        jsonFile.close()
 
-if not os.path.exists(folder):
-    os.makedirs(folder)
+    n = 20000
 
-bottleneck = 100
-alpha = 0.25
+    with h5py.File(jsonObject["CLUSTER_PATH_QCD"], "r") as f:
+        images_qcd = f["images"][:n]
 
-input = Input(shape = (40,40,1))
-encoded = Conv2D(10, 3, padding = "same")(input)
-encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
-encoded = Conv2D(10, 3, padding="same")(encoded) 
-encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
-encoded = AveragePooling2D()(encoded)
-encoded = Conv2D(10, 3, padding="same")(encoded) 
-encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
-encoded = Conv2D(5, 3, padding="same")(encoded) 
-encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
-encoded = Conv2D(5, 3, padding="same")(encoded) 
-encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
-encoded = Flatten()(encoded)
-encoded = Dense(400)(encoded)
-encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
-encoded = Dense(100)(encoded)
-encoded = PReLU(alpha_initializer=Constant(value=alpha))(encoded)
-encoded = Dense(bottleneck)(encoded)
-encoded = PReLU(name="bneck")(encoded)
+    x_data = np.reshape(images_qcd, (20000,40,40,1)) 
 
-decoded = Dense(100)(encoded)
-decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
-decoded = Dense(400)(decoded)
-decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
-decoded = Reshape((20,20,1))(decoded)
-decoded = Conv2D(5, 3, padding = "same")(decoded)
-decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
-decoded = Conv2D(5, 3, padding = "same")(decoded)
-decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
-decoded = UpSampling2D()(decoded)
-decoded = Conv2D(5, 3, padding = "same")(decoded)
-decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
-decoded = Conv2D(10, 3, padding = "same")(decoded)
-decoded = PReLU(alpha_initializer=Constant(value=alpha))(decoded)
-decoded = Conv2D(1, 3, padding = "same")(decoded)
+    # make output directory
+    folder = 'results/'
 
-model = Model(input, decoded, name = "AE_20k")
+    if not os.path.exists(folder):
+        os.makedirs(folder)
 
-model.compile(optimizer = "adam", 
-                loss = losses.MeanSquaredError())
-model.fit(x_data, x_data,
-                epochs = 30,
-                validation_split = 0.2,
-                verbose = 2,
-                callbacks= [keras.callbacks.EarlyStopping(patience = 3),keras.callbacks.CSVLogger(folder + 'historyAE_small_data_20k.csv')])
+    model = ae_model()
 
-model.save("models/AE_20k")
+    model.compile(optimizer = "adam", 
+                    loss = losses.MeanSquaredError())
+    model.fit(x_data, x_data,
+                    epochs = 30,
+                    validation_split = 0.2,
+                    verbose = 2,
+                    callbacks= [keras.callbacks.EarlyStopping(patience = 3),keras.callbacks.CSVLogger(folder + 'historyAE_small_data_20k.csv')])
 
-################################################################################
-##################################### PLOT #####################################
-################################################################################
+    model.save("models/AE_20k")
 
-val_loss = []
-loss = []
+    ################################################################################
+    ##################################### PLOT #####################################
+    ################################################################################
 
-with open('results/historyAE_small_data_20k.csv') as file:
-        csv_reader = csv.reader(file, delimiter=',')
-        eliminator = 0
-        for row in csv_reader:
-            if eliminator!=0:    
-                loss.append(float(row[1]))
-                val_loss.append(float(row[2]))
-            eliminator = eliminator + 1
+    val_loss = []
+    loss = []
 
-fig = plt.figure()
+    with open('results/historyAE_small_data_20k.csv') as file:
+            csv_reader = csv.reader(file, delimiter=',')
+            eliminator = 0
+            for row in csv_reader:
+                if eliminator!=0:    
+                    loss.append(float(row[1]))
+                    val_loss.append(float(row[2]))
+                eliminator = eliminator + 1
 
-plt.title('Loss')
-plt.xlabel('Epoch')
+    fig = plt.figure()
 
-plt.plot(loss, label = "loss")
-plt.plot(val_loss, label = "val_loss")
-plt.legend()
-plt.grid()
-fig.savefig("AE_images/AE_loss_small_data_20k.png")
-plt.close("all")
+    plt.title('Loss')
+    plt.xlabel('Epoch')
+
+    plt.plot(loss, label = "loss")
+    plt.plot(val_loss, label = "val_loss")
+    plt.legend()
+    plt.grid()
+    fig.savefig("AE_images/AE_loss_small_data_20k.png")
+    plt.close("all")
