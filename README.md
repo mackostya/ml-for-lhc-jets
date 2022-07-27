@@ -8,7 +8,7 @@
 ![Pipeline](https://github.com/mackostya/ml-for-lhc-jets/actions/workflows/python-package-pip.yml/badge.svg)
 
 
-In this work 3 different types of models are presented. This models are specified for a binary classification between 2 diffetent types of jets (Quantum chromodynamics and top jets). The task is to create a classifier, to be able differ between the background (QCD-jets) and signal (top-jets), which could result into finiding new Physics Beyond Standard Model (BSM). The paper with a detailed explination can be found [here](https://github.com/mackostya/ml-for-lhc-jets/blob/main/Searching_for_new_physics_at_the_LHC_with_Machine_Learning.pdf).
+In this work 3 different types of models are presented. This models are specified for a binary classification between 2 diffetent types of jets (Quantum chromodynamics and top jets). The task is to create a classifier, to be able differ between the background (QCD-jets) and signal (top-jets), which could result into finiding new Physics Beyond Standard Model (BSM). The paper with a detailed explanation can be found [here](https://github.com/mackostya/ml-for-lhc-jets/blob/main/Searching_for_new_physics_at_the_LHC_with_Machine_Learning.pdf).
 
 The 3 models implemented in this work are:
 - **CNN** (Convolutional Neural Network) - trains on representation of jets as 40x40 images.
