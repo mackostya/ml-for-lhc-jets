@@ -6,4 +6,4 @@ def test_autoencoder():
     input = np.ones((1,40,40,1))
     model = ae_model()
     output = model(input)
-    assert output.shape == input.shape
+    assert output.shape == input.shape, f"The output shape {output.shape} is not comaptible with the input shape {input.shape}"
