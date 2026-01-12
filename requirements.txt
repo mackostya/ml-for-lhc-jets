@@ -1,4 +1,4 @@
 tensorflow
-sklearn
+scikit-learn
 matplotlib
 flake8
